@@ -2,25 +2,38 @@ language: go
 sudo: false
 matrix:
   include:
-    - go: 1.5
-    - go: 1.6
-    - go: 1.7
-    - go: 1.8
-    - go: 1.9
-    - go: tip
+  - go: 1.5
+  - go: 1.6
+  - go: 1.7
+  - go: 1.8
+  - go: 1.x
+    env: LATEST=true
+  - go: tip
   allow_failures:
-    - go: tip
+  - go: tip
 
 before_install:
   - go get github.com/mitchellh/gox
 
 install:
-  - # skip
+  - # Skip
 
 script:
   - go get -t -v ./...
   - diff -u <(echo -n) <(gofmt -d .)
   - go vet $(go list ./... | grep -v /vendor/)
   - go test -v -race ./...
-  # Only build binaries from the latest Go release.
   - if [ "${LATEST}" = "true" ]; then gox -os="linux darwin windows" -arch="amd64" -output="wham.." -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...; fi
+
+deploy:
+  provider: releases
+  api_key:
+    secure: SjGtcNdqqdq2A0crMLOlkgvr8KoJKTLq9Mek4TAh/q7HAqTaAlJWJWek4xwwj/gpDk2sI5vjvhC+BfKOzP48hQoIZ6R5gAqfgQKnw3lgBWP1C6QVFZK3RBaZkeZAgginkc4pDmepK+iepAsw14+B/I1leAc2fgxztVAlQ2LfRGyIhoI2Izug0na2Q8ab9uep8l8k0EUNgg0k6J9WwaBYsqmpCrMnYrODbAgvlh4pSyG7t3aqNF6S+6rM31Tip0yCk5E7TRzm3zXEtMWhlwhm+/W4YdsxYRk+Kfls6Qwz37hUnhHIGBJko48+zQ4UVpJI4XFmMAdg79Rf6PPnJhPCL+Q64D4NTGtUcwFTyrDTmIuWPU3K2Gn7Qj7VudGOBUPL8RbHuSoCY/7wfkQayRWsMu3m0RKJ1+5dTNvgWPycnMJo+tyCdEzJwPTX9GrI+hGa74y+ibFOp/fiME1vBPEqMgF2ad0V4Emk7urw08YkQVqm0yF2PRNGKM48rQVnGntdJm+98S9sfswMnzSI5KONN/m+87Q0ADVcPumL68rTPnt/oHmD9SBixsBN2RM4gP6JGelt6erDpbjldTgi3A1Lx2MfQYPPOBkt98RR2JeUQlXE7E4y2FCyA8KXrCp6fJ1qUfo7L2gAJZ9Ztggw1UhR5iJsSWkbW/eidEOa8UIvXao=
+  file:
+  - wham.darwin.amd64
+  - wham.linux.amd64
+  - logshare.windows.amd64.exe
+  on:
+    repo: juanwolf/wham
+    tags: true
+    condition: $LATEST = true
