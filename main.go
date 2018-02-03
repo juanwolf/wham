@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "github.com/juanwolf/wham/cmd"
 
 func main() {
-	fmt.Println("I can add go to my resume")
+	cmd.Execute()
 }
