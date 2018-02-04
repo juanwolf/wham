@@ -34,7 +34,7 @@ deploy:
   file:
   - wham.darwin.amd64
   - wham.linux.amd64
-  - logshare.windows.amd64.exe
+  - wham.windows.amd64.exe
   on:
     repo: juanwolf/wham
     tags: true
