@@ -13,12 +13,14 @@ matrix:
   - go: tip
 
 before_install:
+  - go get -u github.com/golang/dep/cmd/dep
   - go get github.com/mitchellh/gox
 
 install:
   - # Skip
 
 script:
+  - dep ensure
   - go get -t -v ./...
   - diff -u <(echo -n) <(gofmt -d .)
   - go vet $(go list ./... | grep -v /vendor/)
