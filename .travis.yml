@@ -16,7 +16,7 @@ script:
   - diff -u <(echo -n) <(gofmt -d .)
   - go vet $(go list ./... | grep -v /vendor/)
   - make test DOCKER=false
-  - if [ "${LATEST}" = "true" ]; make build DOCKER=false fi
+  - if [ "${LATEST}" = "true" ]; then make build DOCKER=false; fi
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
