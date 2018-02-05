@@ -4,7 +4,7 @@ PKG=./cmd
 PLATFORMS=linux darwin windows
 ARCH=amd64
 
-INSTALL_GO_DEP=go get -u github.com/golang/dep/cmd/dep
+INSTALL_GO_DEP=go get -u github.com/golang/dep/cmd/dep && dep ensure
 
 TEST_CMD=$(GO) test -coverprofile=coverage.txt -covermode=atomic -race $(PKG)
 BUILD_CMD=go get -u github.com/mitchellh/gox && gox -os="$(PLATFORMS)" -arch="$(ARCH)" -output="{{.Dir}}.{{.OS}}.{{.Arch}}" -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...
@@ -33,7 +33,6 @@ pre:
 ifeq ($(DOCKER),true)
 	docker image inspect $(DOCKER_IMAGE) > /dev/null 2>&1 || 	docker build -t $(DOCKER_IMAGE) .
 	$(call docker_call, $(INSTALL_GO_DEP))
-	$(call docker_call, dep ensure)
 else
 	$(INSTALL_GO_DEP)
 endif
