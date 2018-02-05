@@ -9,20 +9,14 @@ matrix:
   allow_failures:
   - go: tip
 
-before_install:
-  - go get -u github.com/golang/dep/cmd/dep
-  - go get github.com/mitchellh/gox
-
 install:
   - # Skip
 
 script:
-  - dep ensure
-  - go get -t -v ./...
   - diff -u <(echo -n) <(gofmt -d .)
   - go vet $(go list ./... | grep -v /vendor/)
-  - go test -v -coverprofile=coverage.txt -covermode=atomic -race ./cmd
-  - if [ "${LATEST}" = "true" ]; then gox -os="linux darwin windows" -arch="amd64" -output="{{.Dir}}.{{.OS}}.{{.Arch}}" -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...; fi
+  - make test DOCKER=false
+  - if [ "${LATEST}" = "true" ]; make build DOCKER=false fi
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
