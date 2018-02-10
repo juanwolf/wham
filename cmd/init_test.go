@@ -5,26 +5,25 @@ import (
 	"os"
 	"strings"
 	"testing"
-	"time"
 )
 
-const BACKUP_FOLDER = "~/.wham.bkp"
+var BackupDirectory = fmt.Sprintf("%s/.wham.bkp", getHomeDir())
 
 func preTest() {
-	fileInfo, err := os.Stat("~/.wham")
-	if fileInfo != nil {
+	fileInfo, err := os.Stat(WhamDirectory)
+	if err == nil {
 		if fileInfo.IsDir() {
-			os.Rename("~/.wham", BACKUP_FOLDER)
+			os.Rename(WhamDirectory, BackupDirectory)
 		}
 	}
 }
 
 func postTest() {
-	fileInfo, err := os.Stat(BACKUP_FOLDER)
-	if fileInfo != nil {
+	fileInfo, err := os.Stat(BackupDirectory)
+	if err == nil {
 		if fileInfo.IsDir() {
-			os.Remove("~/.wham")
-			os.Rename(BACKUP_FOLDER, "~/.wham")
+			os.Remove(WhamDirectory)
+			os.Rename(BackupDirectory, WhamDirectory)
 		}
 	}
 }
@@ -38,29 +37,23 @@ func TestMain(m *testing.M) {
 	os.Exit(retCode)
 }
 
-func TestInitTwice(t *testing.T) {
-	_init()
-	err := _init()
-	if err != nil {
-		if strings.Contains(err.Error(), "already") {
-			t.Error("'already' expected in error message, got", err.Error(), "instead")
-		}
-	}
-}
-
 func TestInit(t *testing.T) {
 	err := _init()
 	if err != nil {
 		t.Error("An error occured, none were expected. Error: ", err.Error())
 	}
-	fileInfo, err := os.Stat("~/.wham")
-	if fileInfo == nil {
-		t.Error("Could not stat the directory ~/.wham, Not found, or not accessible")
+	_, err = os.Stat(WhamDirectory)
+	if err != nil {
+		t.Error("Could not stat the directory", WhamDirectory, err.Error())
 	}
-	now := time.Now()
-	onCallDB := fmt.Sprintf("~/.wham/oncall_%d_%d.csv", now.Month(), now.Year())
-	fileInfo, err = os.Stat(onCallDB)
-	if fileInfo == nil {
-		t.Error("Could not stat on the DB file:", onCallDB, "is not found or not accessible")
+}
+
+func TestInitTwice(t *testing.T) {
+	_init()
+	err := _init()
+	if err != nil {
+		if !strings.Contains(err.Error(), "already") {
+			t.Error("'already' expected in error message, got", err.Error(), "instead")
+		}
 	}
 }
