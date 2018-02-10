@@ -10,7 +10,7 @@ TEST_CMD=$(GO) test -coverprofile=coverage.txt -covermode=atomic -race $(PKG)
 BUILD_CMD=go get -u github.com/mitchellh/gox && gox -os="$(PLATFORMS)" -arch="$(ARCH)" -output="{{.Dir}}.{{.OS}}.{{.Arch}}" -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...
 
 DOCKER=true
-DOCKER_VOLUME_PATH=/usr/src/wham
+DOCKER_VOLUME_PATH=/go/src/wham
 DOCKER_IMAGE=wham:test
 
 define docker_call
