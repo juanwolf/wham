@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -20,6 +22,13 @@ func TestStart(t *testing.T) {
 		t.Error("Expected 0 but got", now.Sub(startTime).Minutes(), "\nstart calculated:", string(nowText),
 			"\nstart written", startTime)
 	}
+
+	onCallDB := fmt.Sprintf("~/.wham/oncall_%d_%d.csv", now.Month(), now.Year())
+	fileInfo, _ := os.Stat(onCallDB)
+	if fileInfo == nil {
+		t.Error("Could not stat on the DB file:", onCallDB, "is not found or not accessible")
+	}
+
 }
 
 func TestStartTwice(t *testing.T) {
