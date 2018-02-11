@@ -6,7 +6,7 @@ ARCH=amd64
 
 INSTALL_GO_DEP=go get -u github.com/golang/dep/cmd/dep && dep ensure
 
-TEST_CMD=$(GO) test -coverprofile=coverage.txt -covermode=atomic -race $(PKG)
+TEST_CMD=$(GO) test -v -coverprofile=coverage.txt -covermode=atomic -race $(PKG)
 BUILD_CMD=go get -u github.com/mitchellh/gox && gox -os="$(PLATFORMS)" -arch="$(ARCH)" -output="{{.Dir}}.{{.OS}}.{{.Arch}}" -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...
 
 DOCKER=true
